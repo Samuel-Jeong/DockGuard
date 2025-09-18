@@ -14,7 +14,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     [self setupStatusItem];
-    [self ensureAccessibilityPermission];
+    // Don't force accessibility permission check at launch - only when needed
     self.prefsController = [[DisplayPreferencesController alloc] init];
     __weak typeof(self) weakSelf = self;
     self.prefsController.onStartMonitoring = ^{
@@ -25,7 +25,13 @@
 
 - (void)setupStatusItem {
     self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSSquareStatusItemLength];
-    self.statusItem.button.title = @"🧲"; // simple icon
+    NSImage *icon = [NSImage imageNamed:@"DockGuard"];
+    if (icon) {
+        [icon setSize:NSMakeSize(18, 18)];
+        self.statusItem.button.image = icon;
+    } else {
+        self.statusItem.button.title = @"🧲"; // fallback icon
+    }
     NSMenu *menu = [[NSMenu alloc] initWithTitle:@"DockGuard"];
     self.toggleMenuItem = [[NSMenuItem alloc] initWithTitle:@"Start Protection" action:@selector(toggleMonitoring) keyEquivalent:@"s"]; // toggles start/stop
     [menu addItem:self.toggleMenuItem];
@@ -80,6 +86,26 @@
 }
 
 - (void)startMonitoring {
+    // Check accessibility permission only when user wants to start monitoring
+    const void* keys[] = { kAXTrustedCheckOptionPrompt };
+    const void* values[] = { kCFBooleanFalse }; // Don't show system prompt automatically
+    CFDictionaryRef options = CFDictionaryCreate(kCFAllocatorDefault, keys, values, 1, NULL, NULL);
+    Boolean trusted = AXIsProcessTrustedWithOptions(options);
+    if (options) CFRelease(options);
+    
+    if (!trusted) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        alert.messageText = @"Accessibility Permission Required";
+        alert.informativeText = @"DockGuard needs Accessibility permission to monitor the mouse and prevent accidental dock triggers. This is only required when protection is active.";
+        [alert addButtonWithTitle:@"Open Settings"];
+        [alert addButtonWithTitle:@"Cancel"];
+        NSModalResponse resp = [alert runModal];
+        if (resp == NSAlertFirstButtonReturn) {
+            [self openAccessibilityPreferences];
+        }
+        return; // Don't start monitoring without permission
+    }
+    
     if (!self.mouseMonitor) {
         self.mouseMonitor = [[MouseMonitor alloc] init];
     }
