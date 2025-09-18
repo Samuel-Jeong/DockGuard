@@ -186,6 +186,7 @@ DOCK-PIN/
 ├── DisplayPreferencesController.{h,m}  # 설정 UI
 ├── display_debug.sh             # 디스플레이 디버그 도구
 ├── test_debug_logging.sh        # 디버그 테스트 스크립트
+├── patch.sh                     # 패치 스크립트
 └── DockGuard.app/              # 빌드된 앱 번들
 ```
 
