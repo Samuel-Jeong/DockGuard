@@ -132,10 +132,10 @@ CGEventRef mouseEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRe
     return [NSSet setWithArray:arr];
 }
 
-- (void)start {
+- (BOOL)start {
     if (self.isMonitoring) {
         DockGuardLog(@"Already running, ignoring start request");
-        return;
+        return YES;
     }
     
     self.allowedDisplays = [self loadAllowedDisplays];
@@ -165,7 +165,7 @@ CGEventRef mouseEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRe
     
     if (!self.eventTap) {
         DockGuardError(@"Failed to create event tap - accessibility permission may be required");
-        return;
+        return NO;
     }
     
     self.runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, self.eventTap, 0);
@@ -173,7 +173,7 @@ CGEventRef mouseEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRe
         DockGuardError(@"Failed to create run loop source");
         CFRelease(self.eventTap);
         self.eventTap = NULL;
-        return;
+        return NO;
     }
     
     CFRunLoopAddSource(CFRunLoopGetCurrent(), self.runLoopSource, kCFRunLoopCommonModes);
@@ -181,6 +181,7 @@ CGEventRef mouseEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRe
     
     self.isMonitoring = YES;
     DockGuardLog(@"Started real-time mouse monitoring for %lu allowed displays", self.allowedDisplays.count);
+    return YES;
 }
 
 - (void)stop {

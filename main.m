@@ -27,6 +27,10 @@ int main(int argc, const char * argv[]) {
             NSAlert *alert = [[NSAlert alloc] init];
             alert.messageText = @"DockGuard is already running";
             alert.informativeText = @"Another instance of DockGuard is already running. Please use the existing instance in the menu bar.";
+            NSImage *appIcon = [NSImage imageNamed:@"DockGuard"];
+            if (appIcon) {
+                alert.icon = appIcon;
+            }
             [alert addButtonWithTitle:@"OK"];
             alert.alertStyle = NSAlertStyleInformational;
             [alert runModal];

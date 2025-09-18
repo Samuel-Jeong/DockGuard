@@ -1,4 +1,4 @@
-# DockGuard
+# ![DockGuard Icon](DockGuard.icns) DockGuard
 
 **DockGuard**는 macOS에서 특정 디스플레이의 독(Dock) 트리거를 지능적으로 방지하는 유틸리티입니다. 멀티 디스플레이 환경에서 원하지 않는 독 출현을 막아 작업 흐름을 보호합니다.
 

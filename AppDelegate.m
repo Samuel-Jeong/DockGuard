@@ -61,6 +61,10 @@
         NSAlert *alert = [[NSAlert alloc] init];
         alert.messageText = @"Accessibility Permission Required";
         alert.informativeText = @"DockGuard needs Accessibility permission to monitor the mouse. Please grant access in System Settings > Privacy & Security > Accessibility.";
+        NSImage *appIcon = [NSImage imageNamed:@"DockGuard"];
+        if (appIcon) {
+            alert.icon = appIcon;
+        }
         [alert addButtonWithTitle:@"Open Settings"];
         [alert addButtonWithTitle:@"Later"];
         NSModalResponse resp = [alert runModal];
@@ -97,6 +101,10 @@
         NSAlert *alert = [[NSAlert alloc] init];
         alert.messageText = @"Accessibility Permission Required";
         alert.informativeText = @"DockGuard needs Accessibility permission to monitor the mouse and prevent accidental dock triggers. This is only required when protection is active.";
+        NSImage *appIcon = [NSImage imageNamed:@"DockGuard"];
+        if (appIcon) {
+            alert.icon = appIcon;
+        }
         [alert addButtonWithTitle:@"Open Settings"];
         [alert addButtonWithTitle:@"Cancel"];
         NSModalResponse resp = [alert runModal];
@@ -109,8 +117,26 @@
     if (!self.mouseMonitor) {
         self.mouseMonitor = [[MouseMonitor alloc] init];
     }
-    [self.mouseMonitor start];
-    if (self.toggleMenuItem) self.toggleMenuItem.title = @"Pause Protection";
+    BOOL success = [self.mouseMonitor start];
+    if (success) {
+        if (self.toggleMenuItem) self.toggleMenuItem.title = @"Pause Protection";
+    } else {
+        // If start failed, clean up and show error
+        self.mouseMonitor = nil;
+        NSAlert *alert = [[NSAlert alloc] init];
+        alert.messageText = @"Failed to Start Protection";
+        alert.informativeText = @"DockGuard could not start monitoring. Please make sure Accessibility permission is granted in System Settings > Privacy & Security > Accessibility.";
+        NSImage *appIcon = [NSImage imageNamed:@"DockGuard"];
+        if (appIcon) {
+            alert.icon = appIcon;
+        }
+        [alert addButtonWithTitle:@"Open Settings"];
+        [alert addButtonWithTitle:@"OK"];
+        NSModalResponse resp = [alert runModal];
+        if (resp == NSAlertFirstButtonReturn) {
+            [self openAccessibilityPreferences];
+        }
+    }
 }
 
 - (void)stopMonitoring {

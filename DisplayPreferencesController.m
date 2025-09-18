@@ -69,14 +69,23 @@
 }
 
 - (void)buildUI {
-    NSRect frame = NSMakeRect(0, 0, 420, 320);
+    NSRect frame = NSMakeRect(0, 0, 420, 360);
     self.prefsWindow = [[NSWindow alloc] initWithContentRect:frame
                                                    styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable)
                                                      backing:NSBackingStoreBuffered defer:NO];
     self.prefsWindow.title = @"DockGuard Preferences";
+    self.prefsWindow.level = NSFloatingWindowLevel; // Make window stay on top
     NSView *content = self.prefsWindow.contentView;
 
-    NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(20, 60, 380, 220)];
+    // Create tab view
+    NSTabView *tabView = [[NSTabView alloc] initWithFrame:NSMakeRect(10, 10, 400, 340)];
+    
+    // CONTROL Tab
+    NSTabViewItem *controlTab = [[NSTabViewItem alloc] initWithIdentifier:@"control"];
+    controlTab.label = @"CONTROL";
+    NSView *controlView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 400, 310)];
+
+    NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(10, 60, 380, 220)];
     self.tableView = [[NSTableView alloc] initWithFrame:scrollView.bounds];
 
     NSTableColumn *col1 = [[NSTableColumn alloc] initWithIdentifier:@"allowed"];
@@ -95,28 +104,68 @@
     scrollView.documentView = self.tableView;
     scrollView.hasVerticalScroller = YES;
 
-    NSTextField *hint = [[NSTextField alloc] initWithFrame:NSMakeRect(20, 285, 380, 24)];
+    NSTextField *hint = [[NSTextField alloc] initWithFrame:NSMakeRect(10, 285, 380, 24)];
     hint.editable = NO; hint.bezeled = NO; hint.drawsBackground = NO;
-    hint.stringValue = @"체크된 디스플레이에서는 하단에 마우스를 두면 Dock 이 나타납니다.";
 
     // Launch at Login checkbox
-    self.launchAtLoginCheck = [[NSButton alloc] initWithFrame:NSMakeRect(20, 20, 220, 24)];
+    self.launchAtLoginCheck = [[NSButton alloc] initWithFrame:NSMakeRect(10, 20, 220, 24)];
     self.launchAtLoginCheck.buttonType = NSButtonTypeSwitch;
     self.launchAtLoginCheck.title = @"로그인 시 자동 실행";
     self.launchAtLoginCheck.target = self;
     self.launchAtLoginCheck.action = @selector(toggleLaunchAtLogin:);
     self.launchAtLoginCheck.state = [self isLaunchAgentInstalled] ? NSControlStateValueOn : NSControlStateValueOff;
 
-    self.startButton = [[NSButton alloc] initWithFrame:NSMakeRect(300, 20, 100, 30)];
+    self.startButton = [[NSButton alloc] initWithFrame:NSMakeRect(290, 20, 100, 30)];
     self.startButton.title = @"Start";
     self.startButton.bezelStyle = NSBezelStyleRounded;
     self.startButton.target = self;
     self.startButton.action = @selector(startClicked);
 
-    [content addSubview:hint];
-    [content addSubview:scrollView];
-    [content addSubview:self.launchAtLoginCheck];
-    [content addSubview:self.startButton];
+    [controlView addSubview:hint];
+    [controlView addSubview:scrollView];
+    [controlView addSubview:self.launchAtLoginCheck];
+    [controlView addSubview:self.startButton];
+    
+    controlTab.view = controlView;
+    [tabView addTabViewItem:controlTab];
+
+    // HELP Tab
+    NSTabViewItem *helpTab = [[NSTabViewItem alloc] initWithIdentifier:@"help"];
+    helpTab.label = @"HELP";
+    NSView *helpView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 400, 310)];
+
+    // License info
+    NSTextField *licenseTitle = [[NSTextField alloc] initWithFrame:NSMakeRect(20, 260, 360, 20)];
+    licenseTitle.editable = NO; licenseTitle.bezeled = NO; licenseTitle.drawsBackground = NO;
+    licenseTitle.font = [NSFont boldSystemFontOfSize:14];
+    licenseTitle.stringValue = @"License Information";
+
+    NSScrollView *licenseScrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(20, 120, 360, 130)];
+    NSTextView *licenseTextView = [[NSTextView alloc] initWithFrame:licenseScrollView.bounds];
+    licenseTextView.editable = NO;
+    licenseTextView.string = @"This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0).\n\nSee https://creativecommons.org/licenses/by-nc/4.0/";
+    licenseScrollView.documentView = licenseTextView;
+    licenseScrollView.hasVerticalScroller = YES;
+
+    // Contact info
+    NSTextField *contactTitle = [[NSTextField alloc] initWithFrame:NSMakeRect(20, 80, 360, 20)];
+    contactTitle.editable = NO; contactTitle.bezeled = NO; contactTitle.drawsBackground = NO;
+    contactTitle.font = [NSFont boldSystemFontOfSize:14];
+    contactTitle.stringValue = @"Contact Information";
+
+    NSTextField *contactEmail = [[NSTextField alloc] initWithFrame:NSMakeRect(20, 50, 360, 20)];
+    contactEmail.editable = NO; contactEmail.bezeled = NO; contactEmail.drawsBackground = NO;
+    contactEmail.stringValue = @"Email: ehddnr177@naver.com";
+
+    [helpView addSubview:licenseTitle];
+    [helpView addSubview:licenseScrollView];
+    [helpView addSubview:contactTitle];
+    [helpView addSubview:contactEmail];
+
+    helpTab.view = helpView;
+    [tabView addTabViewItem:helpTab];
+
+    [content addSubview:tabView];
 
     self.window = self.prefsWindow;
 }
