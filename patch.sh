@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# DockGuard 패치 스크립트 (Patch Script)
-# 이 스크립트는 DockGuard 애플리케이션의 빌드, 업데이트, 배포를 자동화합니다.
+# DockGuard Patch Script
+# This script automates building, updating, and deploying the DockGuard application.
 #
-# 사용법:
+# Usage:
 #   chmod +x patch.sh
-#   ./patch.sh                    # 기본 패치 (빌드 + 아이콘 생성)
-#   ./patch.sh --clean            # 클린 빌드
-#   ./patch.sh --sign             # 코드 사이닝 포함
-#   ./patch.sh --full             # 전체 패치 (클린 + 빌드 + 아이콘 + 사이닝)
-#   ./patch.sh --backup           # 기존 앱 백업 후 패치
-#   ./patch.sh --install          # 패치 후 Applications 폴더에 설치
-#   ./patch.sh --debug            # 디버그 모드로 실행
-#   ./patch.sh --help             # 도움말 표시
+#   ./patch.sh                    # Basic patch (build + icon generation)
+#   ./patch.sh --clean            # Clean build
+#   ./patch.sh --sign             # Include code signing
+#   ./patch.sh --full             # Full patch (clean + build + icon + signing)
+#   ./patch.sh --backup           # Backup existing app before patch
+#   ./patch.sh --install          # Install to Applications folder after patch
+#   ./patch.sh --debug            # Run in debug mode
+#   ./patch.sh --help             # Show help
 
 APP_NAME="DockGuard"
 BUNDLE="$APP_NAME.app"
@@ -21,11 +21,11 @@ BACKUP_DIR="backups"
 INSTALL_DIR="/Applications"
 VERSION=$(date +"%Y%m%d_%H%M%S")
 
-# 컬러 출력 함수
+# Color output functions
 print_header() {
     echo ""
     echo "🔧 =================================="
-    echo "🔧 DockGuard 패치 스크립트"
+    echo "🔧 DockGuard Patch Script"
     echo "🔧 =================================="
     echo ""
 }
@@ -46,221 +46,221 @@ print_warning() {
     echo "⚠️  $1"
 }
 
-# 도움말 표시
+# Show help
 show_help() {
     cat << EOF
-DockGuard 패치 스크립트 사용법:
+DockGuard Patch Script Usage:
 
-기본 명령어:
-  ./patch.sh                 기본 패치 (빌드만)
-  ./patch.sh --help          이 도움말 표시
+Basic Commands:
+  ./patch.sh                 Basic patch (build only)
+  ./patch.sh --help          Show this help
 
-옵션:
-  --clean                    이전 빌드 파일 삭제 후 클린 빌드
-  --sign                     애플리케이션에 임시 코드 사이닝 적용
-  --full                     전체 패치 (클린 + 빌드 + 사이닝)
-  --backup                   기존 앱을 백업 후 패치
-  --install                  패치 완료 후 /Applications에 설치
-  --restart                  기존 프로세스 종료 후 새 버전으로 재시작
-  --debug                    디버그 모드로 앱 실행
-  --test                     빌드 후 간단한 테스트 실행
+Options:
+  --clean                    Clean build after deleting previous build files
+  --sign                     Apply temporary code signing to application
+  --full                     Full patch (clean + build + signing)
+  --backup                   Backup existing app before patch
+  --install                  Install to /Applications after patch completion
+  --restart                  Kill existing process and restart with new version
+  --debug                    Run app in debug mode
+  --test                     Run simple tests after build
 
-조합 예시:
+Combination Examples:
   ./patch.sh --clean --sign --install --restart
   ./patch.sh --backup --full --install --restart
   ./patch.sh --clean --debug
-  ./patch.sh --restart                        # 기존 프로세스만 재시작
+  ./patch.sh --restart                        # Restart existing process only
 
 EOF
 }
 
-# 백업 생성
+# Create backup
 create_backup() {
     if [ -d "$BUNDLE" ]; then
-        print_step "기존 앱 백업 중..."
+        print_step "Backing up existing app..."
         mkdir -p "$BACKUP_DIR"
         backup_name="${APP_NAME}_backup_${VERSION}.app"
         cp -r "$BUNDLE" "$BACKUP_DIR/$backup_name"
-        print_success "백업 완료: $BACKUP_DIR/$backup_name"
+        print_success "Backup completed: $BACKUP_DIR/$backup_name"
     else
-        print_warning "백업할 앱이 없습니다."
+        print_warning "No app to backup."
     fi
 }
 
-# 실행 중인 DockGuard 프로세스 종료
+# Kill running DockGuard processes
 kill_existing_processes() {
-    print_step "기존 DockGuard 프로세스 확인 중..."
+    print_step "Checking for existing DockGuard processes..."
     
-    # pkill을 사용하여 DockGuard 프로세스 종료
+    # Use pkill to terminate DockGuard processes
     if pgrep -f "DockGuard" > /dev/null 2>&1; then
-        print_warning "실행 중인 DockGuard 프로세스를 종료합니다."
+        print_warning "Terminating running DockGuard processes."
         pkill -f "DockGuard" || true
         sleep 2
         
-        # 강제 종료가 필요한 경우
+        # Force kill if necessary
         if pgrep -f "DockGuard" > /dev/null 2>&1; then
-            print_warning "프로세스가 종료되지 않아 강제 종료합니다."
+            print_warning "Process did not terminate, forcing kill."
             pkill -9 -f "DockGuard" || true
             sleep 1
         fi
         
-        print_success "기존 프로세스 종료 완료"
+        print_success "Existing processes terminated"
     else
-        print_success "실행 중인 DockGuard 프로세스가 없습니다."
+        print_success "No running DockGuard processes found."
     fi
 }
 
-# 클린 빌드 준비
+# Prepare clean build
 clean_build() {
-    print_step "이전 빌드 파일 정리 중..."
+    print_step "Cleaning previous build files..."
     rm -rf "$BUNDLE"
     rm -f *.o
-    print_success "정리 완료"
+    print_success "Cleanup completed"
 }
 
 
-# 메인 빌드
+# Main build
 build_app() {
-    print_step "애플리케이션 빌드 중..."
+    print_step "Building application..."
     if [ -f "build.sh" ]; then
         chmod +x build.sh
         ./build.sh
-        print_success "빌드 완료"
+        print_success "Build completed"
     else
-        print_error "build.sh 스크립트를 찾을 수 없습니다."
+        print_error "Cannot find build.sh script."
         exit 1
     fi
 }
 
-# 코드 사이닝
+# Code signing
 sign_app() {
     if command -v codesign >/dev/null 2>&1; then
-        print_step "애플리케이션 서명 중..."
+        print_step "Signing application..."
         codesign --force --deep --sign - "$BUNDLE" || {
-            print_warning "코드 사이닝 실패, 계속 진행합니다."
+            print_warning "Code signing failed, continuing."
         }
-        print_success "서명 완료"
+        print_success "Signing completed"
     else
-        print_warning "codesign 도구를 찾을 수 없습니다."
+        print_warning "Cannot find codesign tool."
     fi
 }
 
-# 애플리케이션 설치
+# Install application
 install_app() {
     if [ -d "$BUNDLE" ]; then
-        print_step "애플리케이션을 $INSTALL_DIR에 설치 중..."
+        print_step "Installing application to $INSTALL_DIR..."
         if [ -d "$INSTALL_DIR/$BUNDLE" ]; then
-            print_warning "기존 설치된 앱을 제거합니다."
+            print_warning "Removing existing installed app."
             rm -rf "$INSTALL_DIR/$BUNDLE"
         fi
         cp -r "$BUNDLE" "$INSTALL_DIR/"
-        print_success "설치 완료: $INSTALL_DIR/$BUNDLE"
+        print_success "Installation completed: $INSTALL_DIR/$BUNDLE"
     else
-        print_error "설치할 애플리케이션을 찾을 수 없습니다."
+        print_error "Cannot find application to install."
         exit 1
     fi
 }
 
-# 애플리케이션 재시작
+# Restart application
 restart_app() {
     local app_path=""
     
-    # 설치된 앱이 있는지 확인
+    # Check if installed app exists
     if [ -d "$INSTALL_DIR/$BUNDLE" ]; then
         app_path="$INSTALL_DIR/$BUNDLE"
     elif [ -d "$BUNDLE" ]; then
         app_path="$BUNDLE"
     else
-        print_error "재시작할 애플리케이션을 찾을 수 없습니다."
+        print_error "Cannot find application to restart."
         return 1
     fi
     
-    print_step "DockGuard 애플리케이션 재시작 중..."
+    print_step "Restarting DockGuard application..."
     
-    # 백그라운드에서 앱 실행
+    # Run app in background
     nohup open "$app_path" > /dev/null 2>&1 &
     
-    # 잠시 대기 후 실행 확인
+    # Wait briefly and check execution
     sleep 3
     if pgrep -f "DockGuard" > /dev/null 2>&1; then
-        print_success "DockGuard가 성공적으로 시작되었습니다."
+        print_success "DockGuard started successfully."
     else
-        print_warning "DockGuard 시작 확인이 불가능합니다. 수동으로 확인해주세요."
+        print_warning "Cannot verify DockGuard startup. Please check manually."
     fi
 }
 
-# 간단한 테스트
+# Simple test
 run_test() {
     if [ -d "$BUNDLE" ]; then
-        print_step "애플리케이션 테스트 중..."
+        print_step "Testing application..."
         
-        # 번들 구조 확인
+        # Check bundle structure
         if [ -f "$BUNDLE/Contents/MacOS/$APP_NAME" ]; then
-            print_success "실행 파일 확인 완료"
+            print_success "Executable file verified"
         else
-            print_error "실행 파일을 찾을 수 없습니다."
+            print_error "Cannot find executable file."
             return 1
         fi
         
-        # Info.plist 확인
+        # Check Info.plist
         if [ -f "$BUNDLE/Contents/Info.plist" ]; then
-            print_success "Info.plist 확인 완료"
+            print_success "Info.plist verified"
         else
-            print_error "Info.plist를 찾을 수 없습니다."
+            print_error "Cannot find Info.plist."
             return 1
         fi
         
-        # 아이콘 확인
+        # Check icon
         if [ -f "$BUNDLE/Contents/Resources/DockGuard.icns" ]; then
-            print_success "아이콘 파일 확인 완료"
+            print_success "Icon file verified"
         else
-            print_warning "아이콘 파일이 없습니다."
+            print_warning "Icon file not found."
         fi
         
-        print_success "모든 테스트 통과"
+        print_success "All tests passed"
     else
-        print_error "테스트할 애플리케이션을 찾을 수 없습니다."
+        print_error "Cannot find application to test."
         exit 1
     fi
 }
 
-# 디버그 모드로 실행
+# Run in debug mode
 debug_run() {
     if [ -d "$BUNDLE" ]; then
-        print_step "디버그 모드로 애플리케이션 실행 중..."
-        print_warning "애플리케이션을 종료하려면 Ctrl+C를 누르세요."
+        print_step "Running application in debug mode..."
+        print_warning "Press Ctrl+C to exit the application."
         "$BUNDLE/Contents/MacOS/$APP_NAME"
     else
-        print_error "실행할 애플리케이션을 찾을 수 없습니다."
+        print_error "Cannot find application to run."
         exit 1
     fi
 }
 
-# 패치 완료 메시지
+# Patch completion message
 show_completion() {
-    print_success "패치 완료!"
+    print_success "Patch completed!"
     echo ""
-    echo "📱 실행 방법:"
+    echo "📱 How to run:"
     echo "   open '$BUNDLE'"
     echo ""
     if [ -f "display_debug.sh" ]; then
-        echo "🔍 디버그 도구:"
+        echo "🔍 Debug tools:"
         echo "   ./display_debug.sh"
         echo ""
     fi
-    echo "📂 생성된 파일:"
+    echo "📂 Generated files:"
     echo "   $BUNDLE"
     if [ -d "$BACKUP_DIR" ]; then
-        echo "   $BACKUP_DIR/ (백업)"
+        echo "   $BACKUP_DIR/ (backup)"
     fi
     echo ""
 }
 
-# 메인 실행 로직
+# Main execution logic
 main() {
     print_header
     
-    # 명령행 인자 파싱
+    # Parse command line arguments
     CLEAN=false
     SIGN=false
     BACKUP=false
@@ -270,7 +270,7 @@ main() {
     FULL=false
     TEST=false
     
-    # 인자가 없으면 기본적으로 빌드 + 재시작 적용
+    # Apply build + restart by default if no arguments
     DEFAULT_RUN=false
     if [[ $# -eq 0 ]]; then
         RESTART=true
@@ -318,7 +318,7 @@ main() {
                 exit 0
                 ;;
             *)
-                print_error "알 수 없는 옵션: $1"
+                print_error "Unknown option: $1"
                 show_help
                 exit 1
                 ;;
@@ -326,61 +326,61 @@ main() {
     done
     
     
-    # 재시작만 하는 경우 (명시적으로 --restart만 사용한 경우, 기본 실행은 제외)
+    # Restart only case (explicitly using --restart only, excluding default run)
     if [ "$RESTART" = true ] && [ "$DEFAULT_RUN" = false ] && [ "$CLEAN" = false ] && [ "$SIGN" = false ] && [ "$INSTALL" = false ] && [ "$TEST" = false ] && [ "$BACKUP" = false ]; then
         kill_existing_processes
         restart_app
         exit 0
     fi
     
-    # 디버그 모드인 경우
+    # Debug mode case
     if [ "$DEBUG" = true ]; then
         debug_run
         exit 0
     fi
     
-    # 기존 프로세스 종료 (재시작이 요청된 경우)
+    # Kill existing processes (if restart requested)
     if [ "$RESTART" = true ]; then
         kill_existing_processes
     fi
     
-    # 백업 생성
+    # Create backup
     if [ "$BACKUP" = true ]; then
         create_backup
     fi
     
-    # 클린 빌드
+    # Clean build
     if [ "$CLEAN" = true ]; then
         clean_build
     fi
     
     
-    # 애플리케이션 빌드
+    # Build application
     build_app
     
-    # 코드 사이닝
+    # Code signing
     if [ "$SIGN" = true ]; then
         sign_app
     fi
     
-    # 테스트 실행
+    # Run tests
     if [ "$TEST" = true ]; then
         run_test
     fi
     
-    # 애플리케이션 설치
+    # Install application
     if [ "$INSTALL" = true ]; then
         install_app
     fi
     
-    # 애플리케이션 재시작
+    # Restart application
     if [ "$RESTART" = true ]; then
         restart_app
     fi
     
-    # 완료 메시지
+    # Completion message
     show_completion
 }
 
-# 스크립트 실행
+# Execute script
 main "$@"

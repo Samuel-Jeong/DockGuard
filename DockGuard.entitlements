@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Required for global mouse event monitoring -->
+    <key>com.apple.security.temporary-exception.mach-lookup.global-name</key>
+    <array>
+        <string>com.apple.coreservices.appleevents</string>
+        <string>com.apple.windowserver.active</string>
+    </array>
+    
+    <!-- Required for accessibility features -->
+    <key>com.apple.security.automation.apple-events</key>
+    <true/>
+    
+    <!-- Required for display management -->
+    <key>com.apple.security.temporary-exception.shared-preference.read-write</key>
+    <array>
+        <string>com.apple.CoreGraphics</string>
+    </array>
+</dict>
+</plist>

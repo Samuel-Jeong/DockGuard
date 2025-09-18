@@ -213,7 +213,7 @@
         if (!check) {
             check = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 140, 20)];
             check.buttonType = NSButtonTypeSwitch;
-            check.title = @"허용";
+            check.title = @"Allow";
             check.identifier = @"check";
             check.target = self;
             check.action = @selector(toggleAllowed:);
@@ -233,7 +233,7 @@
             cell.identifier = @"name";
         }
         NSTextField *text = [cell viewWithTag:1001];
-        text.stringValue = info.name ?: @"(이름 없음)";
+        text.stringValue = info.name ?: @"(No Name)";
         return cell;
     }
 }

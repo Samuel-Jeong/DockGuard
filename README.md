@@ -1,217 +1,217 @@
 # ![DockGuard Icon](DockGuard_small.png) DockGuard
 
-**DockGuard**는 macOS에서 특정 디스플레이의 독(Dock) 트리거를 지능적으로 방지하는 유틸리티입니다. 멀티 디스플레이 환경에서 원하지 않는 독 출현을 막아 작업 흐름을 보호합니다.
+**DockGuard** is a macOS utility that intelligently prevents Dock triggers on specific displays. It protects your workflow by preventing unwanted Dock appearances in multi-display environments.
 
-## 🎯 주요 기능
+## 🎯 Key Features
 
-- **선택적 독 방지**: 특정 디스플레이에서만 독 트리거를 차단하고 허용된 디스플레이에서는 정상 작동
-- **지능적 감지**: 디스플레이 하단 5% 영역에서 마우스 위치를 실시간 모니터링
-- **우회 방식**: 독 설정을 건드리지 않고 이벤트 가로채기를 통한 안전한 방지
-- **백그라운드 실행**: 시스템 트레이에서 조용히 작동하며 자원 사용량 최소화
-- **자동 시작**: 로그인 시 자동 실행 옵션 제공
-- **디버그 모드**: 명령줄 옵션을 통한 상세한 로그 출력
+- **Selective Dock Prevention**: Block Dock triggers only on specific displays while allowing normal operation on permitted displays
+- **Intelligent Detection**: Real-time mouse position monitoring in the bottom 5% area of displays
+- **Safe Bypass Method**: Secure prevention through event interception without modifying Dock settings
+- **Background Operation**: Runs quietly in the system tray with minimal resource usage
+- **Auto Start**: Provides automatic startup option at login
+- **Debug Mode**: Detailed log output through command-line options
 
-## 📋 시스템 요구사항
+## 📋 System Requirements
 
-- **macOS**: 10.13 (High Sierra) 이상
-- **권한**: 접근성(Accessibility) 권한 필요
-- **아키텍처**: Intel x64 및 Apple Silicon 호환
+- **macOS**: 10.13 (High Sierra) or later
+- **Permissions**: Accessibility permissions required
+- **Architecture**: Compatible with Intel x64 and Apple Silicon
 
-## 🚀 설치 및 실행
+## 🚀 Installation and Execution
 
-### 1. 빌드
+### 1. Build
 
 ```bash
 ./build.sh
 ```
 
-### 2. 패치 스크립트 사용 (권장)
+### 2. Using Patch Script (Recommended)
 
-DockGuard는 빌드, 업데이트, 배포를 자동화하는 `patch.sh` 스크립트를 제공합니다:
+DockGuard provides a `patch.sh` script that automates building, updating, and deployment:
 
 ```bash
-# 기본 사용법
+# Basic usage
 chmod +x patch.sh
-./patch.sh                    # 기본 패치 (빌드 + 재시작)
+./patch.sh                    # Basic patch (build + restart)
 ```
 
-#### 패치 스크립트 옵션
+#### Patch Script Options
 
 ```bash
-# 기본 명령어
-./patch.sh                    # 기본 패치 (빌드만)
-./patch.sh --help             # 도움말 표시
+# Basic commands
+./patch.sh                    # Basic patch (build only)
+./patch.sh --help             # Show help
 
-# 빌드 옵션
-./patch.sh --clean            # 클린 빌드
-./patch.sh --sign             # 코드 사이닝 포함
-./patch.sh --full             # 전체 패치 (클린 + 빌드 + 사이닝)
+# Build options
+./patch.sh --clean            # Clean build
+./patch.sh --sign             # Include code signing
+./patch.sh --full             # Full patch (clean + build + signing)
 
-# 배포 옵션
-./patch.sh --backup           # 기존 앱 백업 후 패치
-./patch.sh --install          # 패치 후 Applications 폴더에 설치
-./patch.sh --restart          # 기존 프로세스 종료 후 재시작
+# Deployment options
+./patch.sh --backup           # Backup existing app before patch
+./patch.sh --install          # Install to Applications folder after patch
+./patch.sh --restart          # Kill existing process and restart
 
-# 개발 옵션
-./patch.sh --debug            # 디버그 모드로 실행
-./patch.sh --test             # 빌드 후 간단한 테스트 실행
+# Development options
+./patch.sh --debug            # Run in debug mode
+./patch.sh --test             # Run simple tests after build
 ```
 
-#### 조합 사용 예시
+#### Combination Usage Examples
 
 ```bash
-# 완전한 배포
+# Complete deployment
 ./patch.sh --clean --sign --install --restart
 
-# 개발 중 빠른 테스트
+# Quick test during development
 ./patch.sh --clean --debug
 
-# 백업 포함 전체 업데이트
+# Full update with backup
 ./patch.sh --backup --full --install --restart
 ```
 
-### 3. 수동 실행
+### 3. Manual Execution
 
-#### 일반 실행 (조용한 모드)
+#### Normal execution (quiet mode)
 ```bash
 open DockGuard.app
 ```
 
-#### 디버그 모드 실행
+#### Debug mode execution
 ```bash
 DockGuard.app/Contents/MacOS/DockGuard --debug
-# 또는
+# or
 DockGuard.app/Contents/MacOS/DockGuard -d
 ```
 
-### 3. 접근성 권한 설정
+### 4. Setting Accessibility Permissions
 
-앱 실행 시 접근성 권한이 필요하다는 알림이 나타나면:
+When the app shows a notification that accessibility permissions are needed:
 
-1. **시스템 설정** > **개인정보보호 및 보안** > **접근성**으로 이동
-2. **DockGuard** 앱을 활성화
-3. 앱을 재시작
+1. Go to **System Preferences** > **Privacy & Security** > **Accessibility**
+2. Enable the **DockGuard** app
+3. Restart the app
 
-## ⚙️ 설정 및 사용법
+## ⚙️ Configuration and Usage
 
-### 디스플레이 설정
+### Display Settings
 
-1. 메뉴바의 ![DockGuard Icon](DockGuard_small.png) 아이콘 클릭
-2. **Preferences** 선택
-3. 독이 허용될 디스플레이에 체크
-4. **Start** 버튼 클릭하여 모니터링 시작
+1. Click the ![DockGuard Icon](DockGuard_small.png) icon in the menu bar
+2. Select **Preferences**
+3. Check the displays where Dock should be allowed
+4. Click **Start** button to begin monitoring
 
-### 자동 시작 설정
+### Auto Start Configuration
 
-- 설정 창에서 **"로그인 시 자동 실행"** 체크박스 선택
-- LaunchAgent를 자동으로 설치하여 시스템 부팅 시 자동 실행
+- Select the **"Launch at Login"** checkbox in the preferences window
+- Automatically installs LaunchAgent for automatic startup at system boot
 
-### 메뉴바 제어
+### Menu Bar Controls
 
-- **Start Protection**: 독 방지 기능 시작
-- **Pause Protection**: 독 방지 기능 일시 정지  
-- **Preferences**: 디스플레이 설정 창 열기
-- **Quit**: 앱 종료
+- **Start Protection**: Start Dock prevention feature
+- **Pause Protection**: Temporarily pause Dock prevention feature
+- **Preferences**: Open display settings window
+- **Quit**: Exit the app
 
-## 🔧 기술적 세부사항
+## 🔧 Technical Details
 
-### 아키텍처
+### Architecture
 
 ```
 DockGuard/
-├── AppDelegate         # 앱 생명주기 및 메뉴바 관리
-├── MouseMonitor        # 마우스 이벤트 모니터링 및 처리
-├── DisplayPreferences  # 디스플레이 설정 UI 및 관리
-└── DebugLog           # 조건부 로깅 시스템
+├── AppDelegate         # App lifecycle and menu bar management
+├── MouseMonitor        # Mouse event monitoring and processing
+├── DisplayPreferences  # Display settings UI and management
+└── DebugLog           # Conditional logging system
 ```
 
-### 동작 원리
+### How It Works
 
-1. **이벤트 탭 생성**: `CGEventTap`을 사용하여 마우스 이벤트 가로채기
-2. **위치 분석**: 실시간으로 마우스 위치와 디스플레이 경계 비교
-3. **좌표 계산**: Quartz 좌표계를 사용하여 정확한 하단 영역 감지
-4. **이벤트 수정**: 위험 구역 감지 시 마우스 위치를 안전 구역으로 이동
-5. **선택적 차단**: 허용된 디스플레이에서는 정상 독 작동 보장
+1. **Event Tap Creation**: Intercept mouse events using `CGEventTap`
+2. **Position Analysis**: Real-time comparison of mouse position with display boundaries
+3. **Coordinate Calculation**: Accurate bottom area detection using Quartz coordinate system
+4. **Event Modification**: Move mouse position to safe zone when danger zone is detected
+5. **Selective Blocking**: Ensure normal Dock operation on permitted displays
 
-### 감지 알고리즘
+### Detection Algorithm
 
-- **임계값**: 각 디스플레이 높이의 8% (기본값)
-- **감지 영역**: 임계값 지점부터 화면 하단까지 전체 영역
-- **상대적 기준**: 절대값이 아닌 디스플레이 크기 대비 백분율 사용
-- **실시간 처리**: 마우스 이동 이벤트마다 즉시 분석
+- **Threshold**: 8% of each display height (default)
+- **Detection Zone**: Entire area from threshold point to screen bottom
+- **Relative Reference**: Use percentage relative to display size, not absolute values
+- **Real-time Processing**: Immediate analysis on every mouse movement event
 
-## 🐛 문제 해결
+## 🐛 Troubleshooting
 
-### 독 방지가 작동하지 않는 경우
+### When Dock Prevention Doesn't Work
 
-1. **접근성 권한 확인**
+1. **Check Accessibility Permissions**
    ```bash
-   # 디버그 모드로 실행하여 권한 상태 확인
+   # Run in debug mode to check permission status
    DockGuard.app/Contents/MacOS/DockGuard --debug
    ```
 
-2. **디스플레이 설정 확인**
-   - 설정에서 해당 디스플레이가 체크 해제되어 있는지 확인
-   - 디스플레이 ID가 올바르게 감지되는지 로그로 확인
+2. **Verify Display Settings**
+   - Check if the display is unchecked in settings
+   - Verify display ID is correctly detected through logs
 
-3. **좌표계 문제**
+3. **Coordinate System Issues**
    ```bash
-   # 디스플레이 디버그 도구 실행
+   # Run display debug tool
    ./display_debug.sh
    ```
 
-### 로그 확인 방법
+### How to Check Logs
 
-1. **콘솔 앱** (Console.app) 실행
-2. 검색 필터에 `DockGuard` 입력
-3. 실시간 로그 메시지 확인
+1. Launch **Console app** (Console.app)
+2. Enter `DockGuard` in the search filter
+3. Monitor real-time log messages
 
-### 성능 문제
+### Performance Issues
 
-- 독 방지 기능이 불필요한 경우 **Pause Protection**으로 일시 정지
-- 디버그 모드는 로그 출력으로 인해 성능 영향 있음
+- Use **Pause Protection** to temporarily pause when Dock prevention is unnecessary
+- Debug mode has performance impact due to log output
 
-## 📁 프로젝트 구조
+## 📁 Project Structure
 
 ```
-DOCK-PIN/
-├── README.md                    # 프로젝트 문서
-├── .gitignore                   # Git 무시 파일 목록
-├── build.sh                     # 빌드 스크립트
-├── Info.plist                   # 앱 정보
-├── main.m                       # 메인 진입점
-├── DebugLog.h                   # 디버그 로깅 헤더
-├── AppDelegate.{h,m}            # 앱 델리게이트
-├── MouseMonitor.{h,m}           # 마우스 모니터링
-├── DisplayPreferencesController.{h,m}  # 설정 UI
-├── display_debug.sh             # 디스플레이 디버그 도구
-├── test_debug_logging.sh        # 디버그 테스트 스크립트
-├── patch.sh                     # 패치 스크립트
-└── DockGuard.app/              # 빌드된 앱 번들
+DockGuard/
+├── README.md                    # Project documentation
+├── .gitignore                   # Git ignore file list
+├── build.sh                     # Build script
+├── Info.plist                   # App information
+├── main.m                       # Main entry point
+├── DebugLog.h                   # Debug logging header
+├── AppDelegate.{h,m}            # App delegate
+├── MouseMonitor.{h,m}           # Mouse monitoring
+├── DisplayPreferencesController.{h,m}  # Settings UI
+├── display_debug.sh             # Display debug tool
+├── test_debug_logging.sh        # Debug test script
+├── patch.sh                     # Patch script
+└── DockGuard.app/              # Built app bundle
 ```
 
-## 🔒 개인정보 보호
+## 🔒 Privacy
 
-- **로컬 처리**: 모든 데이터는 로컬에서만 처리되며 외부 전송 없음
-- **최소 권한**: 접근성 권한만 요구하며 다른 시스템 권한 불필요
-- **투명성**: 오픈 소스로 모든 코드 공개
+- **Local Processing**: All data is processed locally with no external transmission
+- **Minimal Permissions**: Only requires accessibility permissions, no other system permissions needed
+- **Transparency**: All code is open source and publicly available
 
-## 📝 라이선스
+## 📝 License
 
 © 2025 DockGuard. All rights reserved.
 
-## 🤝 기여하기
+## 🤝 Contributing
 
-버그 리포트, 기능 제안, 코드 기여를 환영합니다.
+Bug reports, feature suggestions, and code contributions are welcome.
 
-## 📞 지원
+## 📞 Support
 
-문제가 발생하거나 도움이 필요한 경우:
+If you encounter issues or need help:
 
-1. 먼저 이 README의 문제 해결 섹션을 확인하세요
-2. 디버그 모드로 실행하여 로그를 확인하세요
-3. GitHub Issues에 문제를 보고해주세요
+1. First check the troubleshooting section in this README
+2. Run in debug mode to check logs
+3. Report issues on GitHub Issues
 
 ---
 
-**DockGuard**로 더 나은 멀티 디스플레이 경험을 즐기세요! 🎉
+Enjoy a better multi-display experience with **DockGuard**! 🎉

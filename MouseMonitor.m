@@ -80,20 +80,20 @@ CGEventRef mouseEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRe
         CGDirectDisplayID displayID = displays[i];
         CGRect displayBounds = CGDisplayBounds(displayID);
         
-        DockGuardLog(@"🖥️  Display %u - Quartz 좌표: (%.0f,%.0f) %.0fx%.0f", 
+        DockGuardLog(@"🖥️  Display %u - Quartz coordinates: (%.0f,%.0f) %.0fx%.0f", 
               displayID, displayBounds.origin.x, displayBounds.origin.y, displayBounds.size.width, displayBounds.size.height);
         
         CGFloat bottomEdgeY = displayBounds.origin.y + displayBounds.size.height;
-        DockGuardLog(@"📍 Display %u - 하단 가장자리 Y좌표: %.1f", displayID, bottomEdgeY);
+        DockGuardLog(@"📍 Display %u - Bottom edge Y coordinate: %.1f", displayID, bottomEdgeY);
         
         if (CGRectContainsPoint(displayBounds, mouseLocation)) {
             BOOL isAllowed = [self.allowedDisplays containsObject:@(displayID)];
             
-            DockGuardLog(@"✅ 마우스가 Display %u 위에 있음: %@", 
-                  displayID, isAllowed ? @"독 허용됨" : @"독 차단됨");
+            DockGuardLog(@"✅ Mouse is on Display %u: %@", 
+                  displayID, isAllowed ? @"Dock allowed" : @"Dock blocked");
             
             if (isAllowed) {
-                DockGuardLog(@"🟢 Display %u는 허용된 디스플레이 - 독 차단 안함", displayID);
+                DockGuardLog(@"🟢 Display %u is allowed display - no dock blocking", displayID);
                 free(displays);
                 return NO;
             }
@@ -101,29 +101,29 @@ CGEventRef mouseEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRe
             CGFloat distanceFromBottom = bottomEdgeY - mouseLocation.y;
             CGFloat relativeThreshold = displayBounds.size.height * (self.bottomEdgeThresholdPercent / 100.0);
             
-            DockGuardLog(@"📐 Display %u - 하단까지 거리: %.1f픽셀", displayID, distanceFromBottom);
-            DockGuardLog(@"📊 Display %u - 상대적 임계값: %.1f픽셀 (%.1f%% of %.0f픽셀 높이)", 
+            DockGuardLog(@"📐 Display %u - Distance to bottom: %.1f pixels", displayID, distanceFromBottom);
+            DockGuardLog(@"📊 Display %u - Relative threshold: %.1f pixels (%.1f%% of %.0f pixel height)", 
                   displayID, relativeThreshold, self.bottomEdgeThresholdPercent, displayBounds.size.height);
             
             CGFloat thresholdY = bottomEdgeY - relativeThreshold;
             
             if (mouseLocation.y >= thresholdY) {
-                DockGuardLog(@"🚨 *** 확장된 하단 영역 감지! *** Display %u에서 임계점(%.1f) 이하 전체 영역에서 독 트리거 방지 작동", 
-                      displayID, thresholdY);
+                DockGuardLog(@"🚨 *** Extended bottom area detected! *** Dock trigger prevention active in entire area below threshold (%.1f) on Display %u", 
+                      thresholdY, displayID);
                 free(displays);
                 return YES;
             } else {
-                DockGuardLog(@"🟡 Display %u에서 확장된 하단 영역이 아님 - 독 차단 안함", displayID);
+                DockGuardLog(@"🟡 Not in extended bottom area on Display %u - no dock blocking", displayID);
                 free(displays);
                 return NO;
             }
         } else {
-            DockGuardLog(@"⚪ 마우스가 Display %u 영역 밖에 있음", displayID);
+            DockGuardLog(@"⚪ Mouse is outside Display %u area", displayID);
         }
     }
     
     free(displays);
-    DockGuardLog(@"❓ 마우스가 감지된 디스플레이 위에 없음 - 독 차단 안함");
+    DockGuardLog(@"❓ Mouse is not on any detected display - no dock blocking");
     return NO;
 }
 

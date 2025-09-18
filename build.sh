@@ -95,11 +95,23 @@ else
 EOF
 fi
 
-# Optional ad-hoc code signing (helps with some permissions on certain systems)
+# Code signing options
 if [[ "${SIGN:-0}" != "0" ]]; then
   if command -v codesign >/dev/null 2>&1; then
-    echo "Ad-hoc signing $BUNDLE ..."
-    codesign --force --deep --sign - "$BUNDLE" || true
+    # Check if DEVELOPER_ID is set for proper signing
+    if [[ -n "${DEVELOPER_ID:-}" ]]; then
+      echo "Signing $BUNDLE with Developer ID: $DEVELOPER_ID ..."
+      # Copy icon if available
+      if [[ -f "DockGuard.icns" ]]; then
+        cp "DockGuard.icns" "$RESOURCES/"
+      fi
+      # Sign with Developer ID and entitlements
+      codesign --force --options runtime --entitlements "DockGuard.entitlements" --sign "$DEVELOPER_ID" "$BUNDLE"
+      echo "Signed successfully with Developer ID"
+    else
+      echo "Ad-hoc signing $BUNDLE (set DEVELOPER_ID environment variable for proper signing) ..."
+      codesign --force --deep --sign - "$BUNDLE" || true
+    fi
   fi
 fi
 
