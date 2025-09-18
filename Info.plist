@@ -23,10 +23,16 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>10.13</string>
 	<key>LSUIElement</key>
+	<false/>
+	<key>NSSupportsAutomaticTermination</key>
+	<true/>
+	<key>NSSupportsSuddenTermination</key>
 	<true/>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2025</string>
+	<key>NSAccessibilityUsageDescription</key>
+    <string>DockGuard needs accessibility access to monitor mouse movements and prevent accidental dock triggers on secondary displays.</string>
 </dict>
 </plist>
