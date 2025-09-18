@@ -1,4 +1,4 @@
-# ![DockGuard Icon](DockGuard.icns) DockGuard
+# ![DockGuard Icon](DockGuard_small.png) DockGuard
 
 **DockGuard**는 macOS에서 특정 디스플레이의 독(Dock) 트리거를 지능적으로 방지하는 유틸리티입니다. 멀티 디스플레이 환경에서 원하지 않는 독 출현을 막아 작업 흐름을 보호합니다.
 
@@ -25,7 +25,52 @@
 ./build.sh
 ```
 
-### 2. 실행
+### 2. 패치 스크립트 사용 (권장)
+
+DockGuard는 빌드, 업데이트, 배포를 자동화하는 `patch.sh` 스크립트를 제공합니다:
+
+```bash
+# 기본 사용법
+chmod +x patch.sh
+./patch.sh                    # 기본 패치 (빌드 + 재시작)
+```
+
+#### 패치 스크립트 옵션
+
+```bash
+# 기본 명령어
+./patch.sh                    # 기본 패치 (빌드만)
+./patch.sh --help             # 도움말 표시
+
+# 빌드 옵션
+./patch.sh --clean            # 클린 빌드
+./patch.sh --sign             # 코드 사이닝 포함
+./patch.sh --full             # 전체 패치 (클린 + 빌드 + 사이닝)
+
+# 배포 옵션
+./patch.sh --backup           # 기존 앱 백업 후 패치
+./patch.sh --install          # 패치 후 Applications 폴더에 설치
+./patch.sh --restart          # 기존 프로세스 종료 후 재시작
+
+# 개발 옵션
+./patch.sh --debug            # 디버그 모드로 실행
+./patch.sh --test             # 빌드 후 간단한 테스트 실행
+```
+
+#### 조합 사용 예시
+
+```bash
+# 완전한 배포
+./patch.sh --clean --sign --install --restart
+
+# 개발 중 빠른 테스트
+./patch.sh --clean --debug
+
+# 백업 포함 전체 업데이트
+./patch.sh --backup --full --install --restart
+```
+
+### 3. 수동 실행
 
 #### 일반 실행 (조용한 모드)
 ```bash
@@ -51,7 +96,7 @@ DockGuard.app/Contents/MacOS/DockGuard -d
 
 ### 디스플레이 설정
 
-1. 메뉴바의 🧲 아이콘 클릭
+1. 메뉴바의 ![DockGuard Icon](DockGuard_small.png) 아이콘 클릭
 2. **Preferences** 선택
 3. 독이 허용될 디스플레이에 체크
 4. **Start** 버튼 클릭하여 모니터링 시작
