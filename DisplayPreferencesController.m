@@ -20,7 +20,7 @@
     NSString *home = NSHomeDirectory();
     NSString *dir = [home stringByAppendingPathComponent:@"Library/LaunchAgents"];
     [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
-    return [dir stringByAppendingPathComponent:@"com.example.DockGuard.launcher.plist"];
+    return [dir stringByAppendingPathComponent:@"org.samuel.DockGuard.launcher.plist"];
 }
 
 - (BOOL)isLaunchAgentInstalled {
@@ -30,7 +30,7 @@
 - (void)installLaunchAgent {
     NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
     NSDictionary *plist = @{ 
-        @"Label": @"com.example.DockGuard.launcher",
+        @"Label": @"org.samuel.DockGuard.launcher",
         @"RunAtLoad": @YES,
         @"KeepAlive": @NO,
         @"LimitLoadToSessionType": @"Aqua",

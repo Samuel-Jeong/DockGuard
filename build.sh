@@ -73,7 +73,7 @@ else
   <key>CFBundleExecutable</key>
   <string>DockGuard</string>
   <key>CFBundleIdentifier</key>
-  <string>com.example.DockGuard</string>
+  <string>org.samuel.DockGuard</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundleName</key>
