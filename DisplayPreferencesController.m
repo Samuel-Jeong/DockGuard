@@ -110,7 +110,7 @@
     // Launch at Login checkbox
     self.launchAtLoginCheck = [[NSButton alloc] initWithFrame:NSMakeRect(10, 20, 220, 24)];
     self.launchAtLoginCheck.buttonType = NSButtonTypeSwitch;
-    self.launchAtLoginCheck.title = @"로그인 시 자동 실행";
+    self.launchAtLoginCheck.title = @"Launch at Login";
     self.launchAtLoginCheck.target = self;
     self.launchAtLoginCheck.action = @selector(toggleLaunchAtLogin:);
     self.launchAtLoginCheck.state = [self isLaunchAgentInstalled] ? NSControlStateValueOn : NSControlStateValueOff;
