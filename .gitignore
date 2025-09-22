@@ -196,3 +196,7 @@ Desktop.ini
 
 # User preferences and settings
 UserInterfaceState.xcuserstate
+
+# Sign
+sign_and_build.sh
+CODE_SIGNING_SOLUTION.md
