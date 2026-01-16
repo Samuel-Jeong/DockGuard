@@ -29,6 +29,11 @@ fi
 
 mkdir -p "$MACOS" "$RESOURCES"
 
+# Always include app icon in the bundle (Finder/Dock icon + NSImage imageNamed)
+if [[ -f "DockGuard.icns" ]]; then
+  cp "DockGuard.icns" "$RESOURCES/"
+fi
+
 # Locate tools and SDK
 if ! command -v xcrun >/dev/null 2>&1; then
   echo "xcrun not found. Please install Xcode Command Line Tools (xcode-select --install)."
@@ -84,6 +89,8 @@ else
   <string>1.0</string>
   <key>CFBundleVersion</key>
   <string>1</string>
+  <key>CFBundleIconFile</key>
+  <string>DockGuard</string>
   <key>LSMinimumSystemVersion</key>
   <string>10.13</string>
   <key>LSUIElement</key>
@@ -101,10 +108,6 @@ if [[ "${SIGN:-0}" != "0" ]]; then
     # Check if DEVELOPER_ID is set for proper signing
     if [[ -n "${DEVELOPER_ID:-}" ]]; then
       echo "Signing $BUNDLE with Developer ID: $DEVELOPER_ID ..."
-      # Copy icon if available
-      if [[ -f "DockGuard.icns" ]]; then
-        cp "DockGuard.icns" "$RESOURCES/"
-      fi
       # Sign with Developer ID and entitlements
       codesign --force --options runtime --entitlements "DockGuard.entitlements" --sign "$DEVELOPER_ID" "$BUNDLE"
       echo "Signed successfully with Developer ID"
