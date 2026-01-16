@@ -11,6 +11,64 @@
 - **Auto Start**: Provides automatic startup option at login
 - **Debug Mode**: Detailed log output through command-line options
 
+## 전체 컴포넌트 구조(모듈 관계)
+```mermaid
+flowchart LR
+  subgraph App["DockGuard (macOS Menu Bar App)"]
+    AD["AppDelegate<br/>- 앱 라이프사이클<br/>- 메뉴바 아이콘/메뉴 관리<br/>- Start/Pause/Preferences/Quit"]
+    MM["MouseMonitor<br/>- CGEventTap로 마우스 이벤트 인터셉트<br/>- 위치 분석/처리"]
+    DP["DisplayPreferencesController<br/>- 디스플레이 허용 목록 UI<br/>- 설정 저장/로드"]
+    DL["DebugLog<br/>- 디버그 모드 로깅(-d/--debug)"]
+    LA["LaunchAgent(자동 시작)<br/>- 로그인 시 자동 실행 설정"]
+
+    AD --> DP
+    AD --> MM
+    AD --> LA
+    MM --> DL
+    AD --> DL
+  end
+```
+
+## 동작 흐름(마우스가 화면 하단으로 내려갈 때)
+```mermaid
+flowchart TB
+  START["Start Protection 클릭<br/>보호 기능 시작"] --> TAP["Event Tap 생성<br/>CGEventTap로 마우스 이벤트 인터셉트"]
+  TAP --> POS["현재 마우스 좌표 수집<br/>Quartz 좌표계 기준"]
+  POS --> DISP["현재 좌표가 속한 디스플레이 식별<br/>경계/높이 계산"]
+  DISP --> ZONE["하단 위험구역 판정<br/>기본: 화면 높이의 8% 구간"]
+  ZONE --> ALLOW{"해당 디스플레이가<br/>Dock 허용 목록인가?"}
+  ALLOW -->|예| PASS["이벤트 그대로 통과<br/>Dock 정상 동작"]
+  ALLOW -->|아니오| MITIGATE["이벤트 수정/우회<br/>안전지대로 좌표 이동 등으로 Dock 트리거 방지"]
+  PASS --> END["이벤트 전달"]
+  MITIGATE --> END
+```
+
+## 사용자 조작 시퀀스(Preferences 설정 → Start → 보호 동작)
+```mermaid
+sequenceDiagram
+  autonumber
+  participant U as User
+  participant AD as AppDelegate
+  participant DP as Preferences UI
+  participant MM as MouseMonitor
+  participant OS as macOS (Event Tap)
+  participant DL as Dock
+
+  U->>AD: 메뉴바 아이콘 클릭
+  AD->>DP: Preferences 열기
+  U->>DP: Dock 허용 디스플레이 체크/저장
+  U->>AD: Start Protection
+  AD->>MM: 모니터링 시작 요청
+  MM->>OS: CGEventTap 생성/등록
+  OS-->>MM: 마우스 이벤트 스트림 전달
+  MM->>MM: 좌표/디스플레이/하단구역 판정
+  alt 허용 디스플레이
+    MM-->>DL: 이벤트 그대로 전달<br/>Dock 정상 동작
+  else 차단 디스플레이
+    MM-->>DL: 이벤트 수정/우회<br/>Dock 트리거 방지
+  end
+```
+
 ## 📋 System Requirements
 
 - **macOS**: 10.13 (High Sierra) or later
